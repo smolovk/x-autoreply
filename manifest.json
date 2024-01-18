@@ -1,0 +1,16 @@
+{
+    "manifest_version": 3,
+    "name": "X Autoreply",
+    "version": "0.1.0",
+    "description": "autoreply to tweets on twitter",
+    "icons": {
+        "48": "images/icon-48.png"
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [{
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["content-script.js"]
+    }]
+}
