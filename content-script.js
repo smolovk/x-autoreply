@@ -6,7 +6,7 @@ function timeout(ms) {
 }
 
 let savedTweets = []
-function findTweet(all) {
+function findTweet(all, myName) {
     for (let tweet of all) {
         let tweetText = tweet.querySelector("[data-testid='tweetText']").innerText
         if (!tweetText || tweetText == "")
@@ -17,7 +17,7 @@ function findTweet(all) {
             let profileLink = tweet.querySelector("[data-testid='User-Name']>div>div>a").href;
             tweet.style.background = "#D3D3D3";
             //kuku
-            if (!profileLink.includes("smolov_k_")) 
+            if (!profileLink.includes(myName)) 
                 return tweet
         }
     }
@@ -37,16 +37,23 @@ chrome.runtime.onMessage.addListener(
             // TODO dont forget to check if text exists
             let tweets = []
             let tweet;
+
+            let myName = document.querySelector("[data-testid='SideNav_AccountSwitcher_Button']>div:nth-child(2)>div>div:nth-child(2)").innerText.replace("@","");
+            console.log("My name is ", myName);
             for (;;) {
                 if (!running)
                     break;
                 await timeout(1000);
                 tweets = document.querySelectorAll("[data-testid='tweet']")
 
-                tweet = findTweet(tweets);
+                tweet = findTweet(tweets, myName);
                 if (!tweet)
                     continue;
                 let tweetText = tweet.querySelector("[data-testid='tweetText']").innerText
+
+                //variables to use in text
+                let OPFullName = tweet.querySelector("[data-testid='User-Name']>div").innerText
+                let OPFirstName = OPFullName.split(" ")[0]
 
                 await timeout(300)
                 await tweet.scrollIntoView();
@@ -60,8 +67,10 @@ chrome.runtime.onMessage.addListener(
                     await timeout(2000)
                     let input = document.querySelector('[data-text="true"]').parentElement
                     //kuku
-                    let array = ["gm mate!", "gm bro", "GM!"]
-                    let reply = array[Math.floor(Math.random() * array.length)];
+                    let emojis = ["☀️","☕️","🌞"]
+                    let randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                    let replies = [`Gm ${OPFirstName}${randomEmoji}`]
+                    let reply = replies[Math.floor(Math.random() * replies.length)];
                     input.textContent = reply;
                     input.click()
                     input.dispatchEvent(new Event("input", {bubbles: true}))
